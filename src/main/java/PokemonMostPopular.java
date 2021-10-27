@@ -2,11 +2,8 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Array;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -50,29 +47,33 @@ public class PokemonMostPopular extends HttpServlet {
 	            "<body bgcolor=\"#f0f0f0\">\n" + //
 	            "<h1 align=\"center\">" + title + "</h1>\n");
 	      out.println("<ul>");
+	      // Store all of the Pokemon into a HashMap
 	      List<Pokemon> listPokemon = UtilDB.listPokemon();
-	      HashMap<Pokemon, Integer> map = new HashMap<Pokemon, Integer>();
+	      HashMap<String, Integer> map = new HashMap<String, Integer>();
 	      
 	      for (Pokemon pokemon : listPokemon) {
-	    	  if (map.containsKey(pokemon)) {
-	    		  map.replace(pokemon, map.get(pokemon) + 1);
+	    	  Integer val = map.get(pokemon.getPokemonName());
+
+	    	  if (val == null) {
+	    		  map.put(pokemon.getPokemonName(), 1);
 	    	  }
 	    	  else {
-	    		  map.putIfAbsent(pokemon, 1);
+	    		  map.put(pokemon.getPokemonName(), val + 1);
 	    	  }
+	    	  
 	      }
 	      
 	      // Get the top value
-	      HashMap.Entry<Pokemon, Integer> maxInstance = null;
-	      for (HashMap.Entry<Pokemon, Integer> entry : map.entrySet())
+	      HashMap.Entry<String, Integer> maxInstance = null;
+	      for (HashMap.Entry<String, Integer> entry : map.entrySet())
 	      {
-	          if (maxInstance == null || entry.getValue().compareTo(maxInstance.getValue()) > 0)
+	          if (maxInstance == null || (entry.getValue().compareTo(maxInstance.getValue()) > 0))
 	          {
 	              maxInstance = entry;
 	          }
 	      }
 	      
-	      String mostPopular = maxInstance.getKey().getPokemonName();
+	      String mostPopular = maxInstance.getKey();
 	      
 	      out.println("The most popular Pokemon is " + mostPopular + "!");
 	      out.println("</ul>");
